@@ -106,9 +106,9 @@ npm run dev
 
 ## 🌐 URLs
 
-- **Frontend:** [http://localhost:3000](http://localhost:3002)
-- **Backend:** [http://localhost:3001](http://localhost:3000)
-- **Swagger API Docs:** [http://localhost:3001/swagger](http://localhost:3000/swagger)
+- **Frontend:** [http://localhost:3002](http://localhost:3002)
+- **Backend:** [http://localhost:3000](http://localhost:3000)
+- **Swagger API Docs:** [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
 ---
 
