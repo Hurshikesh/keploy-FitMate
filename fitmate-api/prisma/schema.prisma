@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Analysis {
+  id                  Int      @id @default(autoincrement())
+  age                 Int
+  weight              Float
+  height              Float
+  bodyFat             Float
+  gender              String
+  activityLevel       String
+  goal                String
+  bmi                 Float
+  bmr                 Float
+  tdee                Float
+  recommendedCalories Int
+  createdAt           DateTime @default(now())
+
+  recommendation Recommendation?
+}
+
+model Recommendation {
+  id         Int @id @default(autoincrement())
+  analysisId Int @unique
+
+  analysis Analysis @relation(fields: [analysisId], references: [id])
+
+  meals        Json
+  workouts     Json
+  proteinGrams Int
+  fatGrams     Int
+  carbGrams    Int
+  createdAt    DateTime @default(now())
+}
