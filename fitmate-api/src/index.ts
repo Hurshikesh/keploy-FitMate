@@ -38,4 +38,13 @@ app.get('/swagger', swaggerUI({ url: '/docs' }))
 console.log('[INFO] Swagger at http://localhost:3000/swagger')
 console.log('[INFO] API Docs at http://localhost:3000/docs')
 
-serve(app)
+// ✅ This handles the serve logic so we can test both branches
+export const serveIfNotTest = () => {
+  if (process.env.NODE_ENV !== 'test') {
+    serve(app)
+  }
+}
+
+serveIfNotTest()
+
+export default app

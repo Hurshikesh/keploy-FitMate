@@ -36,6 +36,8 @@ const goalAdjustment = {
   gain: 500,
 }
 
+
+
 const analyzeRoute = createRoute({
   method: 'post',
   path: '/',

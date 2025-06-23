@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma.js'
 const recalculate = new OpenAPIHono()
 
 // Schema for request body
-const RecalculateInput = z.object({
+export const RecalculateInput = z.object({
   analysisId: z.number(),
   weight: z.number(),
   bodyFat: z.number()
