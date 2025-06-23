@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
 
-// ✅ Declare mock at top-level due to hoisting
 const serveMock = vi.fn()
 
 // ✅ Mock before import!

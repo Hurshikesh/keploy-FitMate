@@ -1,7 +1,6 @@
 // tests/analyze.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// 👇 mock prisma deeply before all other imports
 vi.mock('../src/lib/prisma', async () => {
   const mod = await vi.importActual<typeof import('../src/__mocks__/prisma')>(
     '../src/__mocks__/prisma'
