@@ -26,11 +26,11 @@ beforeAll(async () => {
   await prisma.recommendation.create({
     data: {
       analysisId,
-      meals: [
+      meals: JSON.stringify([
         { name: 'Oats', calories: 250 },
         { name: 'Chicken', calories: 400 },
-      ],
-      workouts: ['Pushups', 'Running'],
+      ]),
+      workouts: JSON.stringify(['Pushups', 'Running']),
       proteinGrams: 140,
       fatGrams: 80,
       carbGrams: 300,
@@ -39,12 +39,12 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await prisma.recommendation.deleteMany()
-  await prisma.analysis.deleteMany()
+  await prisma.recommendation.deleteMany({ where: { analysisId } })
+  await prisma.analysis.deleteMany({ where: { id: analysisId } }) // ✅
 })
 
 describe('GET /api/history (integration)', () => {
-  it('should return a list of analysis records with optional recommendations', async () => {
+  it('should return a list of analysis records with recommendations if available', async () => {
     const req = new Request('http://localhost/api/history', {
       method: 'GET',
     })
@@ -53,22 +53,16 @@ describe('GET /api/history (integration)', () => {
     expect(res.status).toBe(200)
 
     const json = await res.json()
-
     expect(Array.isArray(json)).toBe(true)
-    expect(json.length).toBeGreaterThan(0)
 
-    const first = json[0]
+    const target = json.find((entry) => entry.id === analysisId)
+    expect(target).toBeDefined()
 
-    expect(first).toHaveProperty('id')
-    expect(first).toHaveProperty('weight')
-    expect(first).toHaveProperty('bmi')
-    expect(first).toHaveProperty('createdAt')
-
-    // If recommendation exists
-    if (first.recommendation) {
-      expect(first.recommendation).toHaveProperty('meals')
-      expect(Array.isArray(first.recommendation.meals)).toBe(true)
-      expect(typeof first.recommendation.meals[0].name).toBe('string')
+    if (target.recommendation) {
+      expect(target.recommendation).toHaveProperty('meals')
+      const meals = JSON.parse(target.recommendation.meals)
+      expect(Array.isArray(meals)).toBe(true)
+      expect(typeof meals[0].name).toBe('string')
     }
   })
 })

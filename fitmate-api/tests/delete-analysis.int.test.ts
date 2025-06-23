@@ -5,7 +5,6 @@ import { prisma } from '../src/lib/prisma'
 let analysisIdToDelete: number
 
 beforeAll(async () => {
-  // Insert a dummy analysis row to be deleted
   const created = await prisma.analysis.create({
     data: {
       age: 30,
@@ -24,23 +23,21 @@ beforeAll(async () => {
 
   analysisIdToDelete = created.id
 
-  // Also create associated recommendation (if your schema uses analysisId FK)
   await prisma.recommendation.create({
-     data: {
-    analysisId: created.id,
-    meals: JSON.stringify([]),
-    workouts: JSON.stringify([]),
-    proteinGrams: 120,
-    fatGrams: 60,
-    carbGrams: 200,
-  },
+    data: {
+      analysisId: created.id,
+      meals: JSON.stringify([]),
+      workouts: JSON.stringify([]),
+      proteinGrams: 120,
+      fatGrams: 60,
+      carbGrams: 200,
+    },
   })
 })
 
 afterAll(async () => {
-  // Cleanup any leftovers
   await prisma.recommendation.deleteMany({ where: { analysisId: analysisIdToDelete } })
-  await prisma.analysis.deleteMany({ where: { id: analysisIdToDelete } })
+  await prisma.analysis.deleteMany({ where: { id: analysisIdToDelete } }) // ✅
 })
 
 describe('DELETE /api/delete/:id - Integration', () => {
