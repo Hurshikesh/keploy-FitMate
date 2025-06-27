@@ -36,12 +36,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: fitmate-api
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: npx prisma generate --schema=prisma/schema.prisma
+        working-directory: fitmate-api
 
       - name: Run Prisma Migrations
         run: npx prisma migrate deploy --schema=prisma/schema.prisma
+        working-directory: fitmate-api
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
 
@@ -50,13 +53,14 @@ jobs:
 
       - name: Run Keploy Tests
         run: |
-          keploy test -c "npm run dev" --delay 30 --language=javascript --mocking=false
+          keploy test -c "npm run dev" --delay 30 --language=javascript
+        working-directory: fitmate-api
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
 
-      - name: Upload Keploy Report (if needed)
+      - name: Upload Keploy Test Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: keploy-test-output
-          path: .keploy/test-set
+          path: fitmate-api/.keploy/test-set
