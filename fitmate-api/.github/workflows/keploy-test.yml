@@ -1,0 +1,65 @@
+name: Keploy API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  keploy-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fitmate
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
+
+      - name: Install Keploy CLI
+        run: |
+          curl -sL https://keploy.io/install.sh | bash
+
+      - name: Verify test files
+        run: |
+          if [ ! -d "keploy/test-set-0/tests" ]; then
+            echo "::error::No Keploy test files found!"
+            exit 1
+          fi
+
+      - name: Reset database
+        run: |
+          docker exec ${{ job.services.postgres.id }} psql -U postgres -d fitmate -c "TRUNCATE analysis RESTART IDENTITY CASCADE;"
+
+      - name: Run Keploy Tests
+        run: |
+          keploy test -c "npm run dev" --delay 30 --test-sets test-set-0 --language javascript
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
+        timeout-minutes: 5

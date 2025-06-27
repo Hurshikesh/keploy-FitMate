@@ -1,0 +1,573 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "FitMate API",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {},
+        "parameters": {}
+    },
+    "paths": {
+        "/api/analyze": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "age": {
+                                        "type": "number"
+                                    },
+                                    "weight": {
+                                        "type": "number"
+                                    },
+                                    "height": {
+                                        "type": "number"
+                                    },
+                                    "bodyFat": {
+                                        "type": "number"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "activityLevel": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sedentary",
+                                            "light",
+                                            "moderate",
+                                            "active",
+                                            "very-active"
+                                        ]
+                                    },
+                                    "goal": {
+                                        "type": "string",
+                                        "enum": [
+                                            "lose",
+                                            "maintain",
+                                            "gain"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "age",
+                                    "weight",
+                                    "height",
+                                    "bodyFat",
+                                    "gender",
+                                    "activityLevel",
+                                    "goal"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Analysis result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "bmi": {
+                                            "type": "number"
+                                        },
+                                        "bmr": {
+                                            "type": "number"
+                                        },
+                                        "tdee": {
+                                            "type": "number"
+                                        },
+                                        "recommendedCalories": {
+                                            "type": "number"
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "bmi",
+                                        "bmr",
+                                        "tdee",
+                                        "recommendedCalories",
+                                        "createdAt"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/delete/:id": {
+            "delete": {
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "example": "1"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "required": [
+                                        "success"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Invalid ID"
+                                        }
+                                    },
+                                    "required": [
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found or already deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Not Found or already deleted"
+                                        }
+                                    },
+                                    "required": [
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recalculate": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "analysisId": {
+                                        "type": "number"
+                                    },
+                                    "weight": {
+                                        "type": "number"
+                                    },
+                                    "bodyFat": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "analysisId",
+                                    "weight",
+                                    "bodyFat"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "New recalculated analysis entry",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "age": {
+                                            "type": "number"
+                                        },
+                                        "weight": {
+                                            "type": "number"
+                                        },
+                                        "height": {
+                                            "type": "number"
+                                        },
+                                        "bodyFat": {
+                                            "type": "number"
+                                        },
+                                        "gender": {
+                                            "type": "string"
+                                        },
+                                        "activityLevel": {
+                                            "type": "string"
+                                        },
+                                        "goal": {
+                                            "type": "string"
+                                        },
+                                        "bmi": {
+                                            "type": "number"
+                                        },
+                                        "bmr": {
+                                            "type": "number"
+                                        },
+                                        "tdee": {
+                                            "type": "number"
+                                        },
+                                        "recommendedCalories": {
+                                            "type": "number"
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "age",
+                                        "weight",
+                                        "height",
+                                        "bodyFat",
+                                        "gender",
+                                        "activityLevel",
+                                        "goal",
+                                        "bmi",
+                                        "bmr",
+                                        "tdee",
+                                        "recommendedCalories",
+                                        "createdAt"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Previous analysis not found"
+                    }
+                }
+            }
+        },
+        "/api/recommendation/:id": {
+            "get": {
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "example": "4"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recommended meal & workout plan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "analysisId": {
+                                            "type": "number"
+                                        },
+                                        "meals": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "calories": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "name",
+                                                    "calories"
+                                                ]
+                                            }
+                                        },
+                                        "workouts": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "proteinGrams": {
+                                            "type": "number"
+                                        },
+                                        "fatGrams": {
+                                            "type": "number"
+                                        },
+                                        "carbGrams": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "analysisId",
+                                        "meals",
+                                        "workouts",
+                                        "proteinGrams",
+                                        "fatGrams",
+                                        "carbGrams"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID or goal"
+                    },
+                    "404": {
+                        "description": "Analysis not found"
+                    }
+                }
+            }
+        },
+        "/api/history": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Get all analysis entries with recommendation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number"
+                                            },
+                                            "age": {
+                                                "type": "number"
+                                            },
+                                            "weight": {
+                                                "type": "number"
+                                            },
+                                            "height": {
+                                                "type": "number"
+                                            },
+                                            "bodyFat": {
+                                                "type": "number"
+                                            },
+                                            "gender": {
+                                                "type": "string"
+                                            },
+                                            "activityLevel": {
+                                                "type": "string"
+                                            },
+                                            "goal": {
+                                                "type": "string"
+                                            },
+                                            "bmi": {
+                                                "type": "number"
+                                            },
+                                            "bmr": {
+                                                "type": "number"
+                                            },
+                                            "tdee": {
+                                                "type": "number"
+                                            },
+                                            "recommendedCalories": {
+                                                "type": "number"
+                                            },
+                                            "createdAt": {
+                                                "type": "string"
+                                            },
+                                            "recommendation": {
+                                                "type": "object",
+                                                "nullable": true,
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "number"
+                                                    },
+                                                    "meals": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "calories": {
+                                                                    "type": "number"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "name",
+                                                                "calories"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "workouts": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "proteinGrams": {
+                                                        "type": "number"
+                                                    },
+                                                    "fatGrams": {
+                                                        "type": "number"
+                                                    },
+                                                    "carbGrams": {
+                                                        "type": "number"
+                                                    },
+                                                    "analysisId": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "meals",
+                                                    "workouts",
+                                                    "proteinGrams",
+                                                    "fatGrams",
+                                                    "carbGrams",
+                                                    "analysisId"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "age",
+                                            "weight",
+                                            "height",
+                                            "bodyFat",
+                                            "gender",
+                                            "activityLevel",
+                                            "goal",
+                                            "bmi",
+                                            "bmr",
+                                            "tdee",
+                                            "recommendedCalories",
+                                            "createdAt"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/summary/:id": {
+            "get": {
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "example": "3"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lightweight summary of analysis metrics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number"
+                                        },
+                                        "bmi": {
+                                            "type": "number"
+                                        },
+                                        "bmr": {
+                                            "type": "number"
+                                        },
+                                        "tdee": {
+                                            "type": "number"
+                                        },
+                                        "recommendedCalories": {
+                                            "type": "number"
+                                        },
+                                        "weight": {
+                                            "type": "number"
+                                        },
+                                        "goal": {
+                                            "type": "string",
+                                            "enum": [
+                                                "lose",
+                                                "maintain",
+                                                "gain"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "bmi",
+                                        "bmr",
+                                        "tdee",
+                                        "recommendedCalories",
+                                        "weight",
+                                        "goal"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID"
+                    },
+                    "404": {
+                        "description": "Analysis not found"
+                    }
+                }
+            }
+        }
+    }
+}
