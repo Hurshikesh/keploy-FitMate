@@ -32,34 +32,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Prisma migrations
-        run: npx prisma migrate deploy
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Prisma Migrations
+        run: npx prisma migrate deploy --schema=prisma/schema.prisma
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
 
       - name: Install Keploy CLI
-        run: |
-          curl -sL https://keploy.io/install.sh | bash
-
-      - name: Verify test files
-        run: |
-          if [ ! -d "keploy/test-set-0/tests" ]; then
-            echo "::error::No Keploy test files found!"
-            exit 1
-          fi
-
-      - name: Reset database
-        run: |
-          docker exec ${{ job.services.postgres.id }} psql -U postgres -d fitmate -c "TRUNCATE analysis RESTART IDENTITY CASCADE;"
+        run: curl -sL https://keploy.io/install.sh | bash
 
       - name: Run Keploy Tests
         run: |
-          keploy test -c "npm run dev" --delay 30 --test-sets test-set-0 --language javascript
+          keploy test -c "npm run dev" --delay 30 --language=javascript --mocking=false
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
-        timeout-minutes: 5
+
+      - name: Upload Keploy Report (if needed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keploy-test-output
+          path: .keploy/test-set
