@@ -1,0 +1,6 @@
+app:
+  name: fitmate-api
+  port: 3000
+
+testSets:
+  - id: test-set-0
