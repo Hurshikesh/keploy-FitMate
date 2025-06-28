@@ -26,13 +26,13 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm ci
@@ -41,6 +41,8 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate --schema=prisma/schema.prisma
         working-directory: fitmate-api
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
 
       - name: Run Prisma Migrations
         run: npx prisma migrate deploy --schema=prisma/schema.prisma
@@ -49,18 +51,10 @@ jobs:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
 
       - name: Install Keploy CLI
-        run: curl -sL https://keploy.io/install.sh | bash
+        run: curl --silent -L https://keploy.io/ent/install.sh | bash
 
-      - name: Run Keploy Tests
+      - name: Run Keploy Test Suite
         run: |
-          keploy test -c "npm run dev" --delay 30 --language=javascript
+          export KEPLOY_API_KEY=${{ secrets.KEPLOY_API_KEY }}
+          keploy test-suite --app=<8a817196-f71b-4246-9d2c-1b49c3d4df82> --base-path http://localhost:3000 --cloud
         working-directory: fitmate-api
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
-
-      - name: Upload Keploy Test Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: keploy-test-output
-          path: fitmate-api/.keploy/test-set
