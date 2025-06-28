@@ -57,11 +57,13 @@ jobs:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/fitmate?schema=public"
 
       - name: Wait for app startup
-        run: sleep 10  # Or use health check: until curl -s http://localhost:3000/health; do sleep 1; done
+        run: sleep 10  # Or until curl -s http://localhost:3000/health
 
-      - name: Run Keploy Test Suite
+      - name: Run Keploy tests
         run: |
-          export KEPLOY_API_KEY=${{ secrets.KEPLOY_API_KEY }}
-          keploy test-suite --app=<your-app-id> --base-path http://localhost:3000/api
+          keploy test -c "npm run dev" \
+            --delay 10 \
+            --path ./keploy \
+            --test-sets test-set-0 \
+            --language javascript
         working-directory: fitmate-api
-
