@@ -9,7 +9,6 @@ on:
 jobs:
   keploy-test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:16
@@ -18,7 +17,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: fitmate
         ports:
-          - 5433:5432
+          - 5432:5432  # Use standard port 5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -27,34 +26,39 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
         working-directory: fitmate-api
 
-      - name: Generate Prisma Client
-        run: npx prisma generate --schema=prisma/schema.prisma
+      - name: Run database migrations
+        run: npx prisma migrate deploy
         working-directory: fitmate-api
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/fitmate?schema=public"
 
-      - name: Run Prisma Migrations
-        run: npx prisma migrate deploy --schema=prisma/schema.prisma
+      - name: Start application server
+        run: npm run dev &
         working-directory: fitmate-api
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/fitmate?schema=public"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/fitmate?schema=public"
+
+      - name: Wait for app startup
+        run: sleep 10  # Allow server to start
 
       - name: Install Keploy CLI
-        run: curl --silent -L https://keploy.io/ent/install.sh | bash
+        run: |
+          curl -sL https://keploy.io/ent/install.sh | bash
+          sudo mv keploy /usr/local/bin/
 
-      - name: Run Keploy Test Suite
+      - name: Run Keploy test suite
         run: |
           export KEPLOY_API_KEY=${{ secrets.KEPLOY_API_KEY }}
-          keploy test-suite --app=<8a817196-f71b-4246-9d2c-1b49c3d4df82> --base-path http://localhost:3000 --cloud
+          keploy test-suite --app=<8a817196-f71b-4246-9d2c-1b49c3d4df82> --base-path http://localhost:3000/api --cloud
         working-directory: fitmate-api
