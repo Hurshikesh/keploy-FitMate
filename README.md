@@ -306,3 +306,17 @@ npm run test
 ### 📊 Test Coverage Report
 
 ![Screenshot 2025-06-23 at 3 02 44 PM](https://github.com/user-attachments/assets/aa57670a-8692-4e34-85b9-af072a6b05bc)
+
+
+## 📊 API Test Reports (via Keploy Cloud)
+
+Below is a snapshot of API testing using [Keploy](https://keploy.io) integrated with GitHub Actions:
+![Screenshot 2025-06-28 at 2 00 32 AM](https://github.com/user-attachments/assets/557c1f14-f912-4700-a743-89e4ecd006ac)
+
+## ⚙️ CI/CD Workflow File
+
+You can view the CI configuration (`ci.yml`) used to run the tests here:
+
+https://github.com/Hurshikesh/keploy-FitMate/blob/main/.github/workflows/keploy-test.yml
+
+![Screenshot 2025-06-28 at 10 30 03 AM](https://github.com/user-attachments/assets/8b6217c3-7636-4243-b9bc-687bc5927859)
