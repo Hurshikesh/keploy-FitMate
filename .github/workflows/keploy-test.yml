@@ -17,7 +17,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: fitmate
         ports:
-          - 5432:5432  # Standard port
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -57,15 +57,11 @@ jobs:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/fitmate?schema=public"
 
       - name: Wait for app startup
-        run: sleep 10  # Allow server to start
+        run: sleep 10  # Or use health check: until curl -s http://localhost:3000/health; do sleep 1; done
 
-      - name: Run Keploy test suite
+      - name: Run Keploy Test Suite
         run: |
           export KEPLOY_API_KEY=${{ secrets.KEPLOY_API_KEY }}
-          keploy test-suite \
-            --app=${{ secrets.KEPLOY_APP_ID }} \
-            --base-path http://localhost:3000/api \
-            --cloud
+          keploy test-suite --app=<your-app-id> --base-path http://localhost:3000/api
         working-directory: fitmate-api
-
 
